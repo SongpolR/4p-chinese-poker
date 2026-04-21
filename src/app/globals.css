@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+:root {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Theme backgrounds */
+html.dark body {
+  background: linear-gradient(to bottom, #022c22, #064e3b, #022c22);
+  color: #fff;
+}
+
+html.light body {
+  background: linear-gradient(to bottom, #ecfdf5, #f0fdf4, #ecfdf5);
+  color: #1f2937;
+}
+
+/* Light theme overrides for glass panels */
+html.light .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+html.light .border-white\/20 {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+html.light .text-white {
+  color: #1f2937;
+}
+
+html.light .text-white\/70,
+html.light .text-white\/80 {
+  color: rgba(31, 41, 55, 0.7);
+}
+
+html.light .text-white\/40,
+html.light .text-white\/50 {
+  color: rgba(31, 41, 55, 0.4);
+}
+
+html.light .text-white\/30 {
+  color: rgba(31, 41, 55, 0.3);
+}
+
+html.light .text-emerald-200 {
+  color: #065f46;
+}
+
+html.light .text-emerald-300\/70,
+html.light .text-emerald-300\/60 {
+  color: rgba(6, 95, 70, 0.7);
+}
+
+html.light .text-emerald-400\/70 {
+  color: rgba(5, 150, 105, 0.7);
+}
+
+html.light .text-amber-400 {
+  color: #b45309;
+}
+
+html.light .text-amber-300 {
+  color: #92400e;
+}
+
+html.light .text-amber-300\/80 {
+  color: rgba(146, 64, 14, 0.8);
+}
+
+html.light .text-emerald-200\/80 {
+  color: rgba(6, 95, 70, 0.8);
+}
+
+html.light .text-red-300\/70,
+html.light .text-red-300 {
+  color: #dc2626;
+}
+
+html.light .text-red-200 {
+  color: #b91c1c;
+}
+
+html.light .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+html.light .placeholder-white\/40::placeholder,
+html.light .placeholder-white\/50::placeholder {
+  color: rgba(31, 41, 55, 0.4);
+}
+
+html.light .bg-amber-500\/30 {
+  background-color: rgba(245, 158, 11, 0.15);
+}
+
+html.light .hover\:bg-white\/20:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Hide scrollbar on mobile */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
