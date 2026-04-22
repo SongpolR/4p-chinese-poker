@@ -1,4 +1,4 @@
-// OFC Poker scoring: royalties and point calculation
+// Chinese Poker scoring: royalties and point calculation
 
 import { Card, RANK_VALUES } from './cards';
 import { evaluateHand3, evaluateHand5, compareHands, HandResult } from './handEvaluator';
@@ -22,47 +22,34 @@ export interface ScoringResult {
   middleRoyalty: number;
   backRoyalty: number;
   totalRoyalty: number;
-  fantasyland: boolean;
 }
 
 // Front row royalties (3-card hand)
+// Per Wikipedia Chinese poker rules: three-of-a-kind = 3
 export function getFrontRoyalty(hand: HandResult, cards: Card[]): number {
-  if (hand.rank === 'three-of-a-kind') {
-    const val = RANK_VALUES[cards[0].rank];
-    // 222=10, 333=11, ..., AAA=22
-    return 10 + (val - 2);
-  }
-  if (hand.rank === 'pair') {
-    const pairValue = hand.kickers[0];
-    // 66=1, 77=2, 88=3, 99=4, 1010=5, JJ=6, QQ=7, KK=8, AA=9
-    if (pairValue >= 6) return pairValue - 5;
-  }
+  if (hand.rank === 'three-of-a-kind') return 3;
   return 0;
 }
 
 // Middle row royalties (5-card hand)
+// Per Wikipedia: full-house = 1, four-of-a-kind = 3, straight-flush = 4
 export function getMiddleRoyalty(hand: HandResult): number {
   const royalties: Record<string, number> = {
-    'three-of-a-kind': 2,
-    'straight': 4,
-    'flush': 8,
-    'full-house': 12,
-    'four-of-a-kind': 20,
-    'straight-flush': 30,
-    'royal-flush': 50,
+    'full-house': 1,
+    'four-of-a-kind': 3,
+    'straight-flush': 4,
+    'royal-flush': 4,
   };
   return royalties[hand.rank] || 0;
 }
 
 // Back row royalties (5-card hand)
+// Per Wikipedia: four-of-a-kind = 2, straight-flush = 3
 export function getBackRoyalty(hand: HandResult): number {
   const royalties: Record<string, number> = {
-    'straight': 2,
-    'flush': 4,
-    'full-house': 6,
-    'four-of-a-kind': 10,
-    'straight-flush': 15,
-    'royal-flush': 25,
+    'four-of-a-kind': 2,
+    'straight-flush': 3,
+    'royal-flush': 3,
   };
   return royalties[hand.rank] || 0;
 }
@@ -72,25 +59,6 @@ export function isFouled(rows: RowResults): boolean {
   // back >= middle >= front
   if (compareHands(rows.back, rows.middle) < 0) return true;
   if (compareHands(rows.middle, rows.front) < 0) return true;
-  return false;
-}
-
-// Check if player qualifies for fantasyland
-export function qualifiesForFantasyland(rows: RowResults, front: Card[]): boolean {
-  // QQ or better in front, without fouling
-  if (rows.front.rank === 'pair' && rows.front.kickers[0] >= RANK_VALUES['Q']) return true;
-  if (rows.front.rank === 'three-of-a-kind') return true;
-  return false;
-}
-
-// Check if player stays in fantasyland
-export function staysInFantasyland(rows: RowResults): boolean {
-  // Any trips on top, full house+ in middle, quads+ on bottom
-  if (rows.front.rank === 'three-of-a-kind') return true;
-  const middleKeepers = ['full-house', 'four-of-a-kind', 'straight-flush', 'royal-flush'];
-  if (middleKeepers.includes(rows.middle.rank)) return true;
-  const backKeepers = ['four-of-a-kind', 'straight-flush', 'royal-flush'];
-  if (backKeepers.includes(rows.back.rank)) return true;
   return false;
 }
 
@@ -110,7 +78,6 @@ export function evaluateBoard(board: PlayerBoard): ScoringResult {
       middleRoyalty: 0,
       backRoyalty: 0,
       totalRoyalty: 0,
-      fantasyland: false,
     };
   }
 
@@ -125,7 +92,6 @@ export function evaluateBoard(board: PlayerBoard): ScoringResult {
     middleRoyalty,
     backRoyalty,
     totalRoyalty: frontRoyalty + middleRoyalty + backRoyalty,
-    fantasyland: qualifiesForFantasyland(rows, board.front),
   };
 }
 

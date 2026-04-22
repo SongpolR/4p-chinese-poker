@@ -1,4 +1,4 @@
-// Hand evaluation for OFC poker rows
+// Hand evaluation for Chinese poker rows
 
 import { Card, RANK_VALUES, Rank } from './cards';
 

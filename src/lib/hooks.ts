@@ -48,7 +48,6 @@ interface GameStateResponse {
         middleRoyalty: number;
         backRoyalty: number;
         totalRoyalty: number;
-        fantasyland: boolean;
         rows: {
           front: { rank: string; description: string };
           middle: { rank: string; description: string };

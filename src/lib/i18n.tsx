@@ -7,7 +7,7 @@ export type Lang = 'en' | 'th';
 const translations = {
   en: {
     // Home
-    'home.title': 'Open Face Chinese Poker',
+    'home.title': 'Chinese Poker',
     'home.subtitle': '2-4 Players | Real-time Multiplayer',
     'home.createGame': 'Create Game',
     'home.joinGame': 'Join Game',
@@ -32,6 +32,7 @@ const translations = {
     'create.unlimited': 'Unlimited',
     'create.noLimit': 'No limit',
     'create.gameTimeLimit': 'Game Time Limit',
+    'create.hours': 'hr',
     'create.amountPerPoint': 'Amount per Point ($)',
     'create.justForFun': '0 = just for fun',
     'create.pinCode': 'PIN Code (optional)',
@@ -100,7 +101,6 @@ const translations = {
     'round.results': 'Round {n} Results',
     'round.payments': 'Payments',
     'round.roundPoints': 'Round Points',
-    'round.fantasyland': 'Fantasyland! Next round gets all 13 cards at once',
     'round.nextRound': 'Next Round',
     'round.waitingForHost': 'Waiting for host to start next round...',
     'round.autoStart': 'Auto-starting in {n}s...',
@@ -130,13 +130,14 @@ const translations = {
     'history.clearHistory': 'Clear History',
 
     // Common
+    'common.currency': '$',
     'common.host': 'HOST',
     'common.confirmEndGame': 'Are you sure you want to end the game?',
     'common.confirmLeaveGame': 'Are you sure you want to leave the game?',
   },
   th: {
     // Home
-    'home.title': 'โป๊กเกอร์จีนหน้าเปิด',
+    'home.title': 'โป๊กเกอร์จีน',
     'home.subtitle': '2-4 ผู้เล่น | เล่นออนไลน์แบบเรียลไทม์',
     'home.createGame': 'สร้างห้อง',
     'home.joinGame': 'เข้าร่วมห้อง',
@@ -161,6 +162,7 @@ const translations = {
     'create.unlimited': 'ไม่จำกัด',
     'create.noLimit': 'ไม่จำกัด',
     'create.gameTimeLimit': 'เวลาจำกัดเกม',
+    'create.hours': 'ชม.',
     'create.amountPerPoint': 'จำนวนเงินต่อแต้ม (฿)',
     'create.justForFun': '0 = เล่นเพื่อความสนุก',
     'create.pinCode': 'รหัส PIN (ไม่บังคับ)',
@@ -229,7 +231,6 @@ const translations = {
     'round.results': 'ผลรอบที่ {n}',
     'round.payments': 'การจ่ายเงิน',
     'round.roundPoints': 'แต้มรอบนี้',
-    'round.fantasyland': 'Fantasyland! รอบถัดไปได้ไพ่ 13 ใบทั้งหมดทีเดียว',
     'round.nextRound': 'รอบถัดไป',
     'round.waitingForHost': 'รอเจ้าของห้องเริ่มรอบถัดไป...',
     'round.autoStart': 'เริ่มอัตโนมัติใน {n} วินาที...',
@@ -259,6 +260,7 @@ const translations = {
     'history.clearHistory': 'ล้างประวัติ',
 
     // Common
+    'common.currency': '฿',
     'common.host': 'เจ้าของห้อง',
     'common.confirmEndGame': 'คุณแน่ใจหรือไม่ว่าต้องการจบเกม?',
     'common.confirmLeaveGame': 'คุณแน่ใจหรือไม่ว่าต้องการออกจากเกม?',

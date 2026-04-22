@@ -86,7 +86,7 @@ export default function GameSummary({
               </div>
               {amountPerPoint > 0 && (
                 <div className={`text-xs ${(netPayments.get(p.id) || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {(netPayments.get(p.id) || 0) >= 0 ? '+' : ''}${(netPayments.get(p.id) || 0).toFixed(2)}
+                  {(netPayments.get(p.id) || 0) >= 0 ? '+' : ''}{t('common.currency')}{(netPayments.get(p.id) || 0).toFixed(2)}
                 </div>
               )}
             </div>
@@ -138,7 +138,7 @@ export default function GameSummary({
               <div key={p.id} className="flex justify-between text-sm">
                 <span className="font-medium text-white">{p.name}</span>
                 <span className={`font-bold ${net >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {net >= 0 ? t('summary.receives') : t('summary.pays')} ${Math.abs(net).toFixed(2)}
+                  {net >= 0 ? t('summary.receives') : t('summary.pays')} {t('common.currency')}{Math.abs(net).toFixed(2)}
                 </span>
               </div>
             );

@@ -9,7 +9,7 @@ interface Card {
   suit: string;
 }
 
-const SUIT_ORDER: Record<string, number> = { spades: 0, hearts: 1, diamonds: 2, clubs: 3 };
+const SUIT_ORDER: Record<string, number> = { clubs: 0, diamonds: 1, hearts: 2, spades: 3 };
 
 function sortByRankThenSuit(cards: Card[]): Card[] {
   return [...cards].sort((a, b) => {
@@ -83,7 +83,7 @@ function Row({
         <span className="text-[10px] sm:text-xs text-amber-400 font-bold ml-1">+{royalty}</span>
       )}
       {handDesc && (
-        <span className="text-[9px] text-white/50 ml-1 hidden sm:inline">{handDesc}</span>
+        <span className="text-[9px] text-white/50 ml-1 truncate">{handDesc}</span>
       )}
     </div>
   );

@@ -12,12 +12,12 @@ export default function CreateRoom() {
 
   const [hostName, setHostName] = useState('');
   const [maxPlayers, setMaxPlayers] = useState(4);
-  const [totalRounds, setTotalRounds] = useState(6);
+  const [totalRounds, setTotalRounds] = useState(0);
   const [turnTimeLimit, setTurnTimeLimit] = useState(0);
-  const [gameTimeLimit, setGameTimeLimit] = useState(0);
+  const [gameTimeLimitHours, setGameTimeLimitHours] = useState(1);
   const [amountPerPoint, setAmountPerPoint] = useState(0);
   const [pinCode, setPinCode] = useState('');
-  const [autoStartNextRound, setAutoStartNextRound] = useState(true);
+  const [autoStartNextRound, setAutoStartNextRound] = useState(false);
 
   const handleCreate = async () => {
     if (!hostName.trim()) {
@@ -37,7 +37,7 @@ export default function CreateRoom() {
           maxPlayers,
           totalRounds,
           turnTimeLimit,
-          gameTimeLimit,
+          gameTimeLimit: gameTimeLimitHours * 60,
           amountPerPoint,
           pinCode,
           autoStartNextRound,
@@ -108,18 +108,18 @@ export default function CreateRoom() {
           {/* Number of rounds */}
           <div>
             <label className="block text-sm font-medium text-emerald-200 mb-1">
-              {t('create.rounds')}: {totalRounds}
+              {t('create.rounds')}: {totalRounds === 0 ? t('create.unlimited') : totalRounds}
             </label>
             <input
               type="range"
-              min={1}
+              min={0}
               max={20}
               value={totalRounds}
               onChange={(e) => setTotalRounds(parseInt(e.target.value))}
               className="w-full accent-amber-500"
             />
             <div className="flex justify-between text-xs text-white/40">
-              <span>1</span><span>10</span><span>20</span>
+              <span>{t('create.noLimit')}</span><span>10</span><span>20</span>
             </div>
           </div>
 
@@ -145,19 +145,19 @@ export default function CreateRoom() {
           {/* Game time limit */}
           <div>
             <label className="block text-sm font-medium text-emerald-200 mb-1">
-              {t('create.gameTimeLimit')}: {gameTimeLimit === 0 ? t('create.unlimited') : `${gameTimeLimit} min`}
+              {t('create.gameTimeLimit')}: {gameTimeLimitHours === 0 ? t('create.unlimited') : `${gameTimeLimitHours} ${t('create.hours')}`}
             </label>
             <input
               type="range"
               min={0}
-              max={120}
-              step={5}
-              value={gameTimeLimit}
-              onChange={(e) => setGameTimeLimit(parseInt(e.target.value))}
+              max={8}
+              step={1}
+              value={gameTimeLimitHours}
+              onChange={(e) => setGameTimeLimitHours(parseInt(e.target.value))}
               className="w-full accent-amber-500"
             />
             <div className="flex justify-between text-xs text-white/40">
-              <span>{t('create.noLimit')}</span><span>60 min</span><span>120 min</span>
+              <span>{t('create.noLimit')}</span><span>4 {t('create.hours')}</span><span>8 {t('create.hours')}</span>
             </div>
           </div>
 

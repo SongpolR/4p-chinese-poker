@@ -35,6 +35,8 @@ interface GameTableProps {
   totalRounds: number;
   turnTimeLimit: number;
   turnStartTime: number | null;
+  gameTimeLimit: number;
+  gameStartTime: number | null;
   onPlaceCards: (placements: { card: Card; row: Row }[]) => void;
   phase: string;
   isHost: boolean;
@@ -44,7 +46,7 @@ interface GameTableProps {
 
 const ROW_MAX: Record<Row, number> = { front: 3, middle: 5, back: 5 };
 const ROW_LABELS: Record<Row, string> = { front: 'Top (3)', middle: 'Mid (5)', back: 'Bot (5)' };
-const SUIT_ORDER: Record<string, number> = { spades: 0, hearts: 1, diamonds: 2, clubs: 3 };
+const SUIT_ORDER: Record<string, number> = { clubs: 0, diamonds: 1, hearts: 2, spades: 3 };
 
 function cardKey(c: Card) {
   return `${c.rank}_${c.suit}`;
@@ -62,6 +64,8 @@ export default function GameTable({
   totalRounds,
   turnTimeLimit,
   turnStartTime,
+  gameTimeLimit,
+  gameStartTime,
   onPlaceCards,
   phase,
   isHost,
@@ -351,10 +355,11 @@ export default function GameTable({
     localBoard.back.length === 5;
 
   // Display board = server board + local placements, sorted for display
+  // When amReady, server board already has all cards — skip localBoard to avoid duplicates
   const displayBoard = {
-    front: sortForDisplay(me ? [...me.board.front, ...localBoard.front] : localBoard.front),
-    middle: sortForDisplay(me ? [...me.board.middle, ...localBoard.middle] : localBoard.middle),
-    back: sortForDisplay(me ? [...me.board.back, ...localBoard.back] : localBoard.back),
+    front: sortForDisplay(me ? (amReady ? me.board.front : [...me.board.front, ...localBoard.front]) : localBoard.front),
+    middle: sortForDisplay(me ? (amReady ? me.board.middle : [...me.board.middle, ...localBoard.middle]) : localBoard.middle),
+    back: sortForDisplay(me ? (amReady ? me.board.back : [...me.board.back, ...localBoard.back]) : localBoard.back),
   };
 
   // Calculate royalties for complete rows
@@ -416,12 +421,15 @@ export default function GameTable({
       {/* Header */}
       <div className="flex items-center justify-between text-sm">
         <span className="font-semibold text-emerald-200">
-          {t('game.round')} {currentRound}/{totalRounds}
+          {t('game.round')} {currentRound}/{totalRounds > 0 ? totalRounds : '\u221E'}
         </span>
         <span className="text-emerald-300/60">
           {localHand.length} {t('game.cardsInHand')}
         </span>
         <div className="flex items-center gap-2">
+          {gameTimeLimit > 0 && gameStartTime && (
+            <GameTimer startTime={gameStartTime} limit={gameTimeLimit} />
+          )}
           {turnTimeLimit > 0 && turnStartTime && (
             <Timer startTime={turnStartTime} limit={turnTimeLimit} />
           )}
@@ -531,7 +539,7 @@ export default function GameTable({
                       {cards.length}/{maxCards}
                     </span>
                   </span>
-                  <div className="flex gap-0.5 sm:gap-1">
+                  <div className="flex gap-0.5 sm:gap-1 sm:ml-2">
                     {Array.from({ length: maxCards }).map((_, i) => {
                       if (i < cards.length) {
                         const card = cards[i];
@@ -561,7 +569,7 @@ export default function GameTable({
                     <span className="text-[10px] sm:text-xs text-amber-400 font-bold ml-1 shrink-0">+{royaltyInfo.royalty}</span>
                   )}
                   {royaltyInfo.desc && isFull && (
-                    <span className="text-[9px] text-white/40 ml-1 hidden sm:inline truncate">{royaltyInfo.desc}</span>
+                    <span className="text-[9px] text-white/40 ml-1 truncate">{royaltyInfo.desc}</span>
                   )}
                 </div>
               );
@@ -659,6 +667,29 @@ export default function GameTable({
         </div>
       )}
     </div>
+  );
+}
+
+function GameTimer({ startTime, limit }: { startTime: number; limit: number }) {
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => setTick(t => t + 1), 1000);
+    return () => clearInterval(interval);
+  }, [startTime]);
+
+  const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  const limitSec = limit * 60; // limit is in minutes
+  const remaining = Math.max(0, limitSec - elapsed);
+  const isLow = remaining <= 300; // 5 minutes
+  const hours = Math.floor(remaining / 3600);
+  const mins = Math.floor((remaining % 3600) / 60);
+  const secs = remaining % 60;
+
+  return (
+    <span className={`font-mono text-xs font-bold ${isLow ? 'text-red-600 animate-pulse' : 'text-white/50'}`}>
+      {hours > 0 ? `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}` : `${mins}:${secs.toString().padStart(2, '0')}`}
+    </span>
   );
 }
 

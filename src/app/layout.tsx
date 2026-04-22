@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OFC Poker - Open Face Chinese Poker",
-  description: "Play Open Face Chinese Poker with friends online",
+  title: "Chinese Poker - Play Online with Friends",
+  description: "Play Chinese Poker with friends online",
 };
 
 export const viewport: Viewport = {

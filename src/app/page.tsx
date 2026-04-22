@@ -53,13 +53,9 @@ export default function Home() {
       <div className="max-w-md w-full space-y-8 text-center">
         {/* Logo */}
         <div className="space-y-2">
-          <div className="text-6xl sm:text-7xl font-black tracking-tight">
-            <span className="text-red-500">O</span>
-            <span className="text-white">F</span>
-            <span className="text-red-500">C</span>
-          </div>
-          <h1 className="text-xl sm:text-2xl font-light text-emerald-200 tracking-wide">
-            {t('home.title')}
+          <h1 className="text-4xl sm:text-5xl font-black tracking-tight">
+            <span className="text-red-500">Chinese</span>{' '}
+            <span className="text-white">Poker</span>
           </h1>
           <p className="text-sm text-emerald-400/70 mt-1">
             {t('home.subtitle')}

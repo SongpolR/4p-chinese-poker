@@ -19,7 +19,6 @@ interface RoundSummaryProps {
       middleRoyalty: number;
       backRoyalty: number;
       totalRoyalty: number;
-      fantasyland: boolean;
       rows: {
         front: { rank: string; description: string };
         middle: { rank: string; description: string };
@@ -82,11 +81,6 @@ export default function RoundSummary({
               totalScore={result.roundPoints}
               scoring={result.scoring}
             />
-            {result.scoring.fantasyland && (
-              <div className="text-center text-amber-400 font-bold text-xs bg-amber-500/20 rounded-lg py-1">
-                {t('round.fantasyland')}
-              </div>
-            )}
           </div>
         ))}
       </div>
@@ -108,7 +102,7 @@ export default function RoundSummary({
                 <span className="font-medium text-white">{p.toName}</span>
               </span>
               <span className="font-bold text-white">
-                {p.points} {t('game.pts')} = {amountPerPoint > 0 ? `$${p.amount.toFixed(2)}` : `${p.points} ${t('game.pts')}`}
+                {p.points} {t('game.pts')} = {amountPerPoint > 0 ? `${t('common.currency')}${p.amount.toFixed(2)}` : `${p.points} ${t('game.pts')}`}
               </span>
             </div>
           ))}

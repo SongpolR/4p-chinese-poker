@@ -20,7 +20,7 @@ export async function GET(
     return NextResponse.json({ error: 'Player not in room' }, { status: 403 });
   }
 
-  // Return player-specific view: own hand + all boards (face up in OFC)
+  // Return player-specific view: own hand + all boards
   return NextResponse.json({
     roomId: state.roomId,
     roomCode: state.roomCode,
@@ -44,7 +44,7 @@ export async function GET(
       isConnected: p.isConnected,
       totalScore: p.totalScore,
       roundScores: p.roundScores,
-      board: p.board, // all boards are face up in OFC
+      board: p.board,
       cardCount: p.hand.length, // how many cards others still have
     })),
     roundSummaries: state.roundSummaries,

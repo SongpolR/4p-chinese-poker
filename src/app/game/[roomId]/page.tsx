@@ -323,6 +323,8 @@ export default function GamePage({ params }: { params: Promise<{ roomId: string 
           totalRounds={gameState.totalRounds}
           turnTimeLimit={gameState.turnTimeLimit}
           turnStartTime={gameState.turnStartTime}
+          gameTimeLimit={gameState.gameTimeLimit}
+          gameStartTime={gameState.gameStartTime}
           onPlaceCards={handlePlaceCards}
           phase={gameState.phase}
           isHost={isHost}

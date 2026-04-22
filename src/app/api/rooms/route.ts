@@ -15,13 +15,13 @@ export async function POST(request: Request) {
 
     const config: RoomConfig = {
       maxPlayers: Math.min(4, Math.max(2, maxPlayers || 2)) as 2 | 3 | 4,
-      totalRounds: Math.max(1, totalRounds || 6),
+      totalRounds: Math.max(0, totalRounds ?? 6),
       turnTimeLimit: Math.max(0, turnTimeLimit || 0),
       gameTimeLimit: Math.max(0, gameTimeLimit || 0),
       amountPerPoint: Math.max(0, amountPerPoint || 0),
       pinCode: (pinCode || '').toString().slice(0, 4),
       hostName: hostName.trim(),
-      autoStartNextRound: autoStartNextRound !== false,
+      autoStartNextRound: !!autoStartNextRound,
     };
 
     let state = createRoom(config);

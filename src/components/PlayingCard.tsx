@@ -36,14 +36,14 @@ export default function PlayingCard({ rank, suit, selected, onClick, small, face
     return (
       <div className={`
         ${small ? 'w-8 h-11' : 'w-12 h-16 sm:w-14 sm:h-20'}
-        rounded-lg border-2 border-blue-700 bg-gradient-to-br from-blue-600 to-blue-800
+        rounded-lg border-2 border-gray-500 bg-gradient-to-br from-gray-400 to-gray-600
         flex items-center justify-center shadow-md select-none shrink-0
       `}>
         <div
-          className={`${small ? 'w-[65%] h-[70%]' : 'w-[70%] h-[75%]'} rounded-sm border border-blue-400/30 flex items-center justify-center`}
-          style={{ background: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.05) 2px, rgba(255,255,255,0.05) 4px)' }}
+          className={`${small ? 'w-[65%] h-[70%]' : 'w-[70%] h-[75%]'} rounded-sm border border-gray-300/30 flex items-center justify-center`}
+          style={{ background: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.08) 2px, rgba(255,255,255,0.08) 4px)' }}
         >
-          <span className={`text-blue-300/40 ${small ? 'text-xs' : 'text-base'}`}>&#9824;</span>
+          <span className={`text-gray-200/40 ${small ? 'text-xs' : 'text-base'}`}>&#9824;</span>
         </div>
       </div>
     );
@@ -70,21 +70,21 @@ export default function PlayingCard({ rank, suit, selected, onClick, small, face
       `}
     >
       {/* Top-left corner index */}
-      <div className={`absolute ${small ? 'top-px left-[1px]' : 'top-[2px] left-[3px]'} flex flex-col items-center leading-none ${colorClass}`}>
-        <span className={`${small ? 'text-[7px]' : 'text-[8px] sm:text-[10px]'} font-bold`}>{rank}</span>
-        <span className={`${small ? 'text-[6px]' : 'text-[7px] sm:text-[9px]'} -mt-px`}>{symbol}</span>
+      <div className={`absolute ${small ? 'top-px left-[1px]' : 'top-[1px] left-[2px] sm:top-[2px] sm:left-[3px]'} flex flex-col items-center leading-none ${colorClass}`}>
+        <span className={`${small ? 'text-[9px]' : 'text-[11px] sm:text-[13px]'} font-bold`}>{rank}</span>
+        <span className={`${small ? 'text-[8px]' : 'text-[10px] sm:text-xs'} -mt-px`}>{symbol}</span>
       </div>
 
       {/* Bottom-right corner index (rotated 180deg) */}
-      <div className={`absolute ${small ? 'bottom-px right-[1px]' : 'bottom-[2px] right-[3px]'} flex flex-col items-center leading-none rotate-180 ${colorClass}`}>
-        <span className={`${small ? 'text-[7px]' : 'text-[8px] sm:text-[10px]'} font-bold`}>{rank}</span>
-        <span className={`${small ? 'text-[6px]' : 'text-[7px] sm:text-[9px]'} -mt-px`}>{symbol}</span>
+      <div className={`absolute ${small ? 'bottom-px right-[1px]' : 'bottom-[1px] right-[2px] sm:bottom-[2px] sm:right-[3px]'} flex flex-col items-center leading-none rotate-180 ${colorClass}`}>
+        <span className={`${small ? 'text-[9px]' : 'text-[11px] sm:text-[13px]'} font-bold`}>{rank}</span>
+        <span className={`${small ? 'text-[8px]' : 'text-[10px] sm:text-xs'} -mt-px`}>{symbol}</span>
       </div>
 
       {/* Center: Ace — large suit symbol */}
       {isAce && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className={`${small ? 'text-base' : 'text-lg sm:text-2xl'} ${colorClass}`}>{symbol}</span>
+          <span className={`${small ? 'text-xl' : 'text-2xl sm:text-4xl'} ${colorClass}`}>{symbol}</span>
         </div>
       )}
 
@@ -92,29 +92,25 @@ export default function PlayingCard({ rank, suit, selected, onClick, small, face
       {isFace && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className={`${small ? 'w-[58%] h-[50%]' : 'w-[62%] h-[55%]'} rounded-sm border flex flex-col items-center justify-center ${
-            rank === 'J' ? 'bg-blue-50 border-blue-200' :
-            rank === 'Q' ? 'bg-rose-50 border-rose-200' :
-            'bg-amber-50 border-amber-200'
+            isRed ? 'bg-red-50 border-red-200' : 'bg-gray-100 border-gray-300'
           }`}>
-            <span className={`${small ? 'text-[10px]' : 'text-sm sm:text-lg'} leading-none ${
-              rank === 'J' ? 'text-blue-600' :
-              rank === 'Q' ? 'text-rose-600' :
-              'text-amber-600'
+            <span className={`${small ? 'text-xs' : 'text-base sm:text-xl'} leading-none ${
+              isRed ? 'text-red-600' : 'text-gray-800'
             }`}>
               {rank === 'K' ? '\u265A' : rank === 'Q' ? '\u265B' : '\u265E'}
             </span>
-            <span className={`${small ? 'text-[5px]' : 'text-[6px] sm:text-[8px]'} ${colorClass} opacity-60 leading-none`}>{symbol}</span>
+            <span className={`${small ? 'text-[7px]' : 'text-[10px] sm:text-xs'} ${colorClass} opacity-60 leading-none`}>{symbol}</span>
           </div>
         </div>
       )}
 
       {/* Center: Number card — pip layout */}
       {!isFace && !isAce && (
-        <div className={`absolute ${small ? 'top-[22%] bottom-[22%] left-[20%] right-[20%]' : 'top-[20%] bottom-[20%] left-[16%] right-[16%]'}`}>
+        <div className={`absolute ${small ? 'top-[22%] bottom-[22%] left-[18%] right-[18%]' : 'top-[18%] bottom-[18%] left-[14%] right-[14%]'}`}>
           {(PIP_POSITIONS[rank] || []).map(([x, y], i) => (
             <span
               key={i}
-              className={`absolute ${small ? 'text-[5px]' : 'text-[8px] sm:text-[10px]'} ${colorClass} leading-none`}
+              className={`absolute ${small ? 'text-[7px]' : 'text-xs sm:text-sm'} ${colorClass} leading-none`}
               style={{
                 left: `${x}%`,
                 top: `${y}%`,

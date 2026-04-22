@@ -1,4 +1,4 @@
-// Game state management for OFC Poker
+// Game state management for Chinese Poker
 
 import { Card, createDeck, shuffleDeck } from './cards';
 import { PlayerBoard, evaluateBoard, calculateRoundScores, calculateHeadToHead, ScoringResult } from './scoring';
@@ -24,7 +24,6 @@ export interface Player {
   isReady: boolean;
   totalScore: number;
   roundScores: number[];
-  inFantasyland: boolean;
 }
 
 export interface RoundSummary {
@@ -110,7 +109,6 @@ export function addPlayer(state: GameState, id: string, name: string, isHost: bo
         isReady: false,
         totalScore: 0,
         roundScores: [],
-        inFantasyland: false,
       },
     ],
   };
@@ -192,20 +190,13 @@ export function dealNextCards(state: GameState): GameState {
     return evaluateRound(state);
   }
 
-  const players = state.players.map((p, i) => {
-    if (p.inFantasyland && p.hand.length > 0) {
-      return { ...p, isReady: false };
-    }
-    return { ...p, isReady: false };
-  });
+  const players = state.players.map(p => ({ ...p, isReady: false }));
 
-  // Deal 1 card to each non-fantasyland player
+  // Deal 1 card to each player
   let deckIdx = state.deckIndex;
   for (let i = 0; i < players.length; i++) {
-    if (!players[i].inFantasyland) {
-      players[i] = { ...players[i], hand: [state.deck[deckIdx]] };
-      deckIdx++;
-    }
+    players[i] = { ...players[i], hand: [state.deck[deckIdx]] };
+    deckIdx++;
   }
 
   return {
@@ -266,10 +257,9 @@ export function evaluateRound(state: GameState): GameState {
     ...p,
     totalScore: p.totalScore + roundPoints[i],
     roundScores: [...p.roundScores, roundPoints[i]],
-    inFantasyland: !boardResults[i].fouled && boardResults[i].fantasyland,
   }));
 
-  const isLastRound = state.currentRound >= state.config.totalRounds;
+  const isLastRound = state.config.totalRounds > 0 && state.currentRound >= state.config.totalRounds;
   const isTimeUp = state.config.gameTimeLimit > 0 && state.gameStartTime
     ? (Date.now() - state.gameStartTime) >= state.config.gameTimeLimit * 60 * 1000
     : false;

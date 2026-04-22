@@ -8,11 +8,11 @@ export default function SettingsBar() {
   const { lang, setLang } = useI18n();
 
   return (
-    <div className="fixed top-3 right-3 z-50 flex items-center gap-1.5">
+    <div className="fixed bottom-3 right-3 z-50 flex items-center gap-1.5">
       {/* Language toggle */}
       <button
         onClick={() => setLang(lang === 'en' ? 'th' : 'en')}
-        className="px-2 py-1 rounded-lg text-xs font-bold bg-white/10 dark:bg-white/10 backdrop-blur border border-white/20 dark:border-white/20 hover:bg-white/20 transition-colors text-white/80"
+        className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold bg-white/10 dark:bg-white/10 backdrop-blur border border-white/20 dark:border-white/20 hover:bg-white/20 transition-colors text-white/80"
         title={lang === 'en' ? 'Switch to Thai' : 'เปลี่ยนเป็นภาษาอังกฤษ'}
       >
         {lang === 'en' ? 'TH' : 'EN'}

@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chinese Poker
+
+A real-time multiplayer Chinese Poker web app for 2-4 players built with Next.js.
+
+## Features
+
+- **2-4 Player Support** - Create rooms and invite friends via room code or link
+- **Real-time Gameplay** - Automatic state polling for live updates
+- **Drag & Drop / Tap to Place** - Arrange 13 cards into front (3), middle (5), and back (5) rows
+- **Card Sorting** - Sort hand by rank, suit, or both (rank then suit) with auto-sort option
+- **Realistic Card UI** - Cards with pip layouts, face card designs, and corner indices
+- **Scoring & Royalties** - 1-6 point system with royalties per Wikipedia Chinese Poker rules
+- **Foul Detection** - Warns when rows violate back >= middle >= front strength rule
+- **Game Timer** - Configurable game time limit and per-turn timer
+- **Bilingual** - English and Thai language support
+- **Room PIN** - Optional PIN code for private rooms
+- **Game History** - Completed games saved locally
+
+## Game Rules
+
+Each player receives 13 cards and arranges them into three rows:
+
+| Row | Cards | Position |
+|-----|-------|----------|
+| Front | 3 | Top (weakest) |
+| Middle | 5 | Middle |
+| Back | 5 | Bottom (strongest) |
+
+Rows must be in ascending strength: **back >= middle >= front**. Violating this is a foul.
+
+### Scoring (1-6 Method)
+
+- +1 point per row won against each opponent
+- +3 bonus for winning all 3 rows (scoop)
+- Foul: pay 6 + opponent's royalties to each non-fouled opponent
+
+### Royalties
+
+| Hand | Front | Middle | Back |
+|------|-------|--------|------|
+| Three-of-a-kind | 3 | - | - |
+| Full House | - | 1 | - |
+| Four-of-a-kind | - | 3 | 2 |
+| Straight Flush | - | 4 | 3 |
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Frontend**: React 19, TypeScript, Tailwind CSS 4
+- **State**: In-memory server-side store with 1.5s client polling
+- **Styling**: Tailwind CSS with dark theme
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to play.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+  app/              # Next.js pages and API routes
+    api/game/       # Game actions (start, place, state, end, leave, extend)
+    api/rooms/      # Room management (create, join, lookup)
+    game/[roomId]/  # Game page
+    room/create/    # Room creation page
+  components/       # React components
+    PlayingCard.tsx  # Card rendering with pip layouts
+    GameTable.tsx    # Main game UI with drag-drop placement
+    PlayerBoard.tsx  # Player board display
+    RoundSummary.tsx # Round results
+    GameSummary.tsx  # Final game results
+  lib/              # Game logic
+    cards.ts        # Card types, deck, shuffling
+    handEvaluator.ts# Hand ranking (5-card and 3-card)
+    scoring.ts      # Royalties, foul detection, point calculation
+    gameState.ts    # Game state management
+    hooks.ts        # React hooks (useGameState polling)
+    i18n.tsx        # Internationalization (EN/TH)
+```
