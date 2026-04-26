@@ -16,6 +16,11 @@ export const RANK_VALUES: Record<Rank, number> = {
   '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14,
 };
 
+// Suit ranking for tie-breaking: Spades > Hearts > Diamonds > Clubs
+export const SUIT_VALUES: Record<Suit, number> = {
+  spades: 4, hearts: 3, diamonds: 2, clubs: 1,
+};
+
 export const SUIT_SYMBOLS: Record<Suit, string> = {
   spades: '♠', hearts: '♥', diamonds: '♦', clubs: '♣',
 };

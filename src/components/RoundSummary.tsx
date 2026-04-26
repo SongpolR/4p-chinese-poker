@@ -15,9 +15,11 @@ interface RoundSummaryProps {
     };
     scoring: {
       fouled: boolean;
+      dragon: boolean;
       frontRoyalty: number;
       middleRoyalty: number;
       backRoyalty: number;
+      dragonBonus: number;
       totalRoyalty: number;
       rows: {
         front: { rank: string; description: string };

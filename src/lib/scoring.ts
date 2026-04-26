@@ -4,9 +4,9 @@ import { Card, RANK_VALUES } from './cards';
 import { evaluateHand3, evaluateHand5, compareHands, HandResult } from './handEvaluator';
 
 export interface PlayerBoard {
-  front: Card[];  // 3 cards
-  middle: Card[]; // 5 cards
-  back: Card[];   // 5 cards
+  front: Card[];  // 3 cards (Top)
+  middle: Card[]; // 5 cards (Middle)
+  back: Card[];   // 5 cards (Bottom)
 }
 
 export interface RowResults {
@@ -17,46 +17,68 @@ export interface RowResults {
 
 export interface ScoringResult {
   fouled: boolean;
+  dragon: boolean;
   rows: RowResults;
   frontRoyalty: number;
   middleRoyalty: number;
   backRoyalty: number;
+  dragonBonus: number;
   totalRoyalty: number;
 }
 
-// Front row royalties (3-card hand)
-// Per Wikipedia Chinese poker rules: three-of-a-kind = 3
+// Top hand royalties (3 cards):
+//   Three Aces → +10, Three of a Kind → +5, Pair of Aces → +2
 export function getFrontRoyalty(hand: HandResult, cards: Card[]): number {
-  if (hand.rank === 'three-of-a-kind') return 3;
+  if (hand.rank === 'three-of-a-kind') {
+    return cards[0].rank === 'A' ? 10 : 5;
+  }
+  if (hand.rank === 'pair') {
+    // First kicker is the pair value
+    if (hand.kickers[0] === RANK_VALUES['A']) return 2;
+  }
   return 0;
 }
 
-// Middle row royalties (5-card hand)
-// Per Wikipedia: full-house = 1, four-of-a-kind = 3, straight-flush = 4
+// Middle hand royalties (5 cards):
+//   RSF → +20, SF → +14, Four Aces → +14, 4OAK → +12, Full House (Three Aces) → +4
 export function getMiddleRoyalty(hand: HandResult): number {
-  const royalties: Record<string, number> = {
-    'full-house': 1,
-    'four-of-a-kind': 3,
-    'straight-flush': 4,
-    'royal-flush': 4,
-  };
-  return royalties[hand.rank] || 0;
+  if (hand.rank === 'royal-flush') return 20;
+  if (hand.rank === 'straight-flush') return 14;
+  if (hand.rank === 'four-of-a-kind') {
+    return hand.kickers[0] === RANK_VALUES['A'] ? 14 : 12;
+  }
+  if (hand.rank === 'full-house') {
+    return hand.kickers[0] === RANK_VALUES['A'] ? 4 : 0;
+  }
+  return 0;
 }
 
-// Back row royalties (5-card hand)
-// Per Wikipedia: four-of-a-kind = 2, straight-flush = 3
+// Bottom hand royalties (5 cards):
+//   RSF → +10, SF → +7, Four Aces → +7, 4OAK → +6, Full House (Three Aces) → +2
 export function getBackRoyalty(hand: HandResult): number {
-  const royalties: Record<string, number> = {
-    'four-of-a-kind': 2,
-    'straight-flush': 3,
-    'royal-flush': 3,
-  };
-  return royalties[hand.rank] || 0;
+  if (hand.rank === 'royal-flush') return 10;
+  if (hand.rank === 'straight-flush') return 7;
+  if (hand.rank === 'four-of-a-kind') {
+    return hand.kickers[0] === RANK_VALUES['A'] ? 7 : 6;
+  }
+  if (hand.rank === 'full-house') {
+    return hand.kickers[0] === RANK_VALUES['A'] ? 2 : 0;
+  }
+  return 0;
 }
+
+// Dragon: all 13 cards form a complete sequence 2..A (i.e. one of each rank).
+export function isDragon(board: PlayerBoard): boolean {
+  const all = [...board.front, ...board.middle, ...board.back];
+  if (all.length !== 13) return false;
+  const ranks = new Set(all.map(c => c.rank));
+  return ranks.size === 13;
+}
+
+export const DRAGON_BONUS = 40;
 
 // Check if board is fouled (rows not in ascending strength order)
 export function isFouled(rows: RowResults): boolean {
-  // back >= middle >= front
   if (compareHands(rows.back, rows.middle) < 0) return true;
   if (compareHands(rows.middle, rows.front) < 0) return true;
   return false;
@@ -69,14 +91,17 @@ export function evaluateBoard(board: PlayerBoard): ScoringResult {
   const back = evaluateHand5(board.back);
   const rows = { front, middle, back };
   const fouled = isFouled(rows);
+  const dragon = isDragon(board);
 
   if (fouled) {
     return {
       fouled: true,
+      dragon,
       rows,
       frontRoyalty: 0,
       middleRoyalty: 0,
       backRoyalty: 0,
+      dragonBonus: 0,
       totalRoyalty: 0,
     };
   }
@@ -84,33 +109,44 @@ export function evaluateBoard(board: PlayerBoard): ScoringResult {
   const frontRoyalty = getFrontRoyalty(front, board.front);
   const middleRoyalty = getMiddleRoyalty(middle);
   const backRoyalty = getBackRoyalty(back);
+  const dragonBonus = dragon ? DRAGON_BONUS : 0;
 
   return {
     fouled: false,
+    dragon,
     rows,
     frontRoyalty,
     middleRoyalty,
     backRoyalty,
-    totalRoyalty: frontRoyalty + middleRoyalty + backRoyalty,
+    dragonBonus,
+    totalRoyalty: frontRoyalty + middleRoyalty + backRoyalty + dragonBonus,
   };
 }
 
-// Calculate points between two players using 1-6 scoring
+// Calculate points between two players using row-by-row scoring.
+// playerCount is used for the Derby multiplier (winning all 3 rows multiplies the head-to-head total by N).
 export function calculateHeadToHead(
   a: ScoringResult,
-  b: ScoringResult
-): { aPoints: number; bPoints: number } {
-  // If both foul, 0-0
-  if (a.fouled && b.fouled) return { aPoints: 0, bPoints: 0 };
+  b: ScoringResult,
+  playerCount: number = 2
+): { aPoints: number; bPoints: number; derby: boolean } {
+  // Both foul → no exchange
+  if (a.fouled && b.fouled) return { aPoints: 0, bPoints: 0, derby: false };
 
-  // If one fouls, other gets 6 + their royalties
-  if (a.fouled) return { aPoints: -(6 + b.totalRoyalty), bPoints: 6 + b.totalRoyalty };
-  if (b.fouled) return { aPoints: 6 + a.totalRoyalty, bPoints: -(6 + a.totalRoyalty) };
+  // Foul: opponent gets a flat penalty plus their own royalties (no Derby on foul).
+  const FOUL_PENALTY = 6;
+  if (a.fouled) {
+    const pts = FOUL_PENALTY + b.totalRoyalty;
+    return { aPoints: -pts, bPoints: pts, derby: false };
+  }
+  if (b.fouled) {
+    const pts = FOUL_PENALTY + a.totalRoyalty;
+    return { aPoints: pts, bPoints: -pts, derby: false };
+  }
 
   let aRowWins = 0;
   let bRowWins = 0;
 
-  // Compare each row
   const frontCmp = compareHands(a.rows.front, b.rows.front);
   if (frontCmp > 0) aRowWins++;
   else if (frontCmp < 0) bRowWins++;
@@ -123,30 +159,29 @@ export function calculateHeadToHead(
   if (backCmp > 0) aRowWins++;
   else if (backCmp < 0) bRowWins++;
 
-  // Basic points: +1 per row won, -1 per row lost
-  let aPoints = aRowWins - bRowWins;
-  let bPoints = bRowWins - aRowWins;
+  // 1 point per row won, plus royalty difference
+  let aPoints = (aRowWins - bRowWins) + (a.totalRoyalty - b.totalRoyalty);
+  let bPoints = -aPoints;
 
-  // Scoop bonus: +3 for winning all 3 rows
-  if (aRowWins === 3) { aPoints += 3; bPoints -= 3; }
-  if (bRowWins === 3) { bPoints += 3; aPoints -= 3; }
+  // Derby: winning all 3 rows multiplies the head-to-head total by playerCount
+  let derby = false;
+  if (aRowWins === 3 || bRowWins === 3) {
+    derby = true;
+    aPoints *= playerCount;
+    bPoints *= playerCount;
+  }
 
-  // Add royalties
-  aPoints += a.totalRoyalty - b.totalRoyalty;
-  bPoints += b.totalRoyalty - a.totalRoyalty;
-
-  return { aPoints, bPoints };
+  return { aPoints, bPoints, derby };
 }
 
 // Calculate round scores for all players
-export function calculateRoundScores(
-  boards: ScoringResult[]
-): number[] {
+export function calculateRoundScores(boards: ScoringResult[]): number[] {
   const scores = new Array(boards.length).fill(0);
+  const playerCount = boards.length;
 
   for (let i = 0; i < boards.length; i++) {
     for (let j = i + 1; j < boards.length; j++) {
-      const { aPoints, bPoints } = calculateHeadToHead(boards[i], boards[j]);
+      const { aPoints, bPoints } = calculateHeadToHead(boards[i], boards[j], playerCount);
       scores[i] += aPoints;
       scores[j] += bPoints;
     }

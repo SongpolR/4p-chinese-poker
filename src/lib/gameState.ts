@@ -222,9 +222,10 @@ export function evaluateRound(state: GameState): GameState {
 
   // Calculate payments between each pair
   const payments: RoundSummary['payments'] = [];
+  const playerCount = state.players.length;
   for (let i = 0; i < state.players.length; i++) {
     for (let j = i + 1; j < state.players.length; j++) {
-      const { aPoints } = calculateHeadToHead(boardResults[i], boardResults[j]);
+      const { aPoints } = calculateHeadToHead(boardResults[i], boardResults[j], playerCount);
       if (aPoints > 0) {
         payments.push({
           from: state.players[j].id,

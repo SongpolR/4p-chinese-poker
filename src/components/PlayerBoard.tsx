@@ -31,9 +31,11 @@ interface PlayerBoardProps {
   faceDown?: boolean;
   scoring?: {
     fouled: boolean;
+    dragon?: boolean;
     frontRoyalty: number;
     middleRoyalty: number;
     backRoyalty: number;
+    dragonBonus?: number;
     rows: {
       front: { description: string };
       middle: { description: string };
@@ -121,6 +123,11 @@ export default function PlayerBoard({
           {scoring?.fouled && (
             <span className="text-[10px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded-full font-bold">
               {t('game.foul')}
+            </span>
+          )}
+          {scoring?.dragon && !scoring.fouled && (
+            <span className="text-[10px] bg-amber-500/30 text-amber-300 px-1.5 py-0.5 rounded-full font-bold">
+              🐉 +{scoring.dragonBonus ?? 40}
             </span>
           )}
         </div>
